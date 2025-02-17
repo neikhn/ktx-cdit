@@ -69,6 +69,4 @@ This project is a Node.js application that follows the MVC (Model-View-Controlle
 ## License
 This project is licensed under the MIT License.
 
-## Author
-Your Name
 
