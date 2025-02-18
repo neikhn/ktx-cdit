@@ -3,7 +3,6 @@ const sessionService = require("../services/sessionService");
 const sessionController = {
   login: async (req, res) => {
     try {
-      // Assuming user authentication is already done and you have userId available in req.user or similar
       const userId = req.user.MaNguoiDung;
 
       if (!userId) {

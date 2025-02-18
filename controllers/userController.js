@@ -44,9 +44,6 @@ const userController = {
             TenDangNhap: user.TenDangNhap,
           },
         });
-
-      // Send session ID in body for apis testing
-      // return res.status(200).json({ message: "Login successful", sessionId: sessionId, user: { MaNguoiDung: user.MaNguoiDung, TenNguoiDung: user.TenNguoiDung, TenDangNhap: user.TenDangNhap } });
     } catch (error) {
       console.error("Error during login:", error);
       return res

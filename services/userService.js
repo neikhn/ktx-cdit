@@ -11,9 +11,9 @@ const userService = {
 
     const passwordMatch = await bcrypt.compare(password, user.MatKhau);
     if (passwordMatch) {
-      return user; // successful
+      return user; // Successful
     } else {
-      return null; // incorrect
+      return null; // Incorrect
     }
   },
 
