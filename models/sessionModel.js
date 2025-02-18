@@ -7,12 +7,12 @@ const sessionModel = {
       let pool = await sql.connect(dbConfig);
       let result = await pool
         .request()
-        .input("MaPhien", sql.VarChar, sessionId)
-        .input("MaNguoiDung", sql.Int, userId)
+        .input("SessionID", sql.VarChar, sessionId)
+        .input("UserID", sql.Int, userId)
         .query(`
-                INSERT INTO Phien (MaPhien, MaNguoiDung)
-                VALUES (@MaPhien, @MaNguoiDung)
-                `);
+          INSERT INTO Sessions (SessionID, UserID)
+          VALUES (@SessionID, @UserID)
+        `);
       return result.rowsAffected > 0;
     } catch (err) {
       console.error("Error creating session:", err);
@@ -20,36 +20,57 @@ const sessionModel = {
     }
   },
 
-  getSessionBySessionId: async (sessionId) => {
+  getSession: async (sessionId) => {
     try {
-      let pool = await sql.connect(dbConfig); 
-      let result = await pool.request().input("MaPhien", sql.VarChar, sessionId)
+      let pool = await sql.connect(dbConfig);
+      let result = await pool
+        .request()
+        .input("SessionID", sql.VarChar, sessionId)
         .query(`
-                SELECT *
-                FROM Phien
-                WHERE MaPhien = @MaPhien
-                `);
+          SELECT *
+          FROM Sessions
+          WHERE SessionID = @SessionID
+        `);
       return result.recordset[0];
     } catch (err) {
-      console.error("Error getting session by ID:", err);
+      console.error("Error getting session:", err);
       throw err;
     }
   },
 
-  deleteSessionBySessionId: async (sessionId) => {
+  deleteSession: async (sessionId) => {
     try {
       let pool = await sql.connect(dbConfig);
-      let result = await pool.request().input("MaPhien", sql.VarChar, sessionId)
+      let result = await pool
+        .request()
+        .input("SessionID", sql.VarChar, sessionId)
         .query(`
-                DELETE FROM Phien
-                WHERE MaPhien = @MaPhien
-                `);
+          DELETE FROM Sessions
+          WHERE SessionID = @SessionID
+        `);
       return result.rowsAffected > 0;
     } catch (err) {
       console.error("Error deleting session:", err);
       throw err;
     }
   },
+
+  deleteExpiredSessions: async (expiryTime) => {
+    try {
+      let pool = await sql.connect(dbConfig);
+      let result = await pool
+        .request()
+        .input('ExpiryTime', sql.DateTime, expiryTime)
+        .query(`
+          DELETE FROM Sessions
+          WHERE CreatedAt < @ExpiryTime
+        `);
+      return result.rowsAffected[0];
+    } catch (err) {
+      console.error("Error deleting expired sessions:", err);
+      throw err;
+    }
+  }
 };
 
 module.exports = sessionModel;

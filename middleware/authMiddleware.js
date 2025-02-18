@@ -14,7 +14,7 @@ const authenticateSession = async (req, res, next) => {
             return res.status(401).json({ message: "Authentication failed: Invalid session." }); 
         }
         // user verification
-        if (req.user && req.user.MaNguoiDung !== session.MaNguoiDung) {
+        if (req.user && req.user.UserID !== session.UserID) {
             return res.status(403).json({ 
                 message: "Authentication failed: Session does not belong to this user." 
             });
@@ -22,7 +22,7 @@ const authenticateSession = async (req, res, next) => {
 
         req.session = session;
         // attach the verified userId for convenience in controllers
-        // req.userId = session.MaNguoiDung;
+        // req.userId = session.UserID;
         next(); // Proceed 
 
     } catch (error) {

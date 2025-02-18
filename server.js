@@ -5,21 +5,23 @@ const cookieParser = require('cookie-parser');
 const sql = require('mssql');
 const dbConfig = require('./dbConfig');
 require('dotenv').config();
+const { initializeSessionCleanup } = require('./helpers/sessionCleanup');
 
 const app = express();
 const port = 3000;
 
 app.get("/", (request, response) => {
-  response.send("running");
+    response.send("running");
 });
 
-app.use(express.json()); 
-app.use(express.urlencoded({ extended: true })); 
+app.use(express.json());
 app.use(cookieParser());
+
 app.use('/sessions', sessionRoutes);
 app.use('/users', userRoutes);
 
-app.listen(3000, () => {
-  console.log(`SERVER RUNNING ON: ${port}`);
-  console.log(`http://localhost:${port}`);
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
 });
+
+initializeSessionCleanup();

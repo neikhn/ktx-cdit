@@ -27,7 +27,7 @@ const userController = {
           .status(401)
           .json({ message: "Invalid username or password" });
       }
-      const sessionId = await sessionService.createSession(user.MaNguoiDung);
+      const sessionId = await sessionService.createSession(user.UserID);
 
       res.cookie("sessionId", sessionId, {
         httpOnly: true,
@@ -39,9 +39,9 @@ const userController = {
         .json({
           message: "Login successful",
           user: {
-            MaNguoiDung: user.MaNguoiDung,
-            TenNguoiDung: user.TenNguoiDung,
-            TenDangNhap: user.TenDangNhap,
+            UserID: user.UserID,
+            FullName: user.FullName,
+            Username: user.Username,
           },
         });
     } catch (error) {

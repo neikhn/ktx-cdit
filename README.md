@@ -10,6 +10,8 @@
 ├── services
 │   ├── userService.js
 │   ├── sessionService.js
+├── helpers
+│   ├── sessionCleanup.js
 ├── routes
 │   ├── userRoutes.js
 │   ├── sessionRoutes.js
@@ -54,18 +56,26 @@ This project is a Node.js application that follows the MVC (Model-View-Controlle
 - **models/**: Defines the data structure and interacts with the database.
 - **services/**: Implements business logic for handling operations.
 - **middleware/**: Contains middleware functions for authentication and authorization.
+- **helpers/**: Contains helper functions for the application.
 - **controllers/**: Contains controllers that handle requests and responses.
 - **routes/**: Defines API endpoints and maps them to controllers.
 - **server.js**: The main entry point for the application.
 
 ## API Endpoints
-| Method | Endpoint | Description |
-|--------|---------|-------------|
-| GET | /sessions | Fetch all sessions |
-| POST | /sessions | Create a new session |
-| GET | /sessions/:id | Fetch session by ID |
-| PUT | /sessions/:id | Update session details |
-| DELETE | /sessions/:id | Delete session |
+
+User Management
+| Method | Endpoint | Description | Auth Required | Request Body | Response |
+|--------|----------|-------------|---------------|--------------|-----------|
+| POST | /users/register | Register a new user | No | ```json { "FullName": "string", "Username": "string", "PhoneNumber": "string", "Email": "string", "QRCode": "string", "Password": "string", "UserType": "number" }``` | ```json { "message": "User registered successfully", "user": { "UserID": "number", "FullName": "string", "Username": "string", "PhoneNumber": "string", "Email": "string", "QRCode": "string", "UserType": "number" }}``` |
+| POST | /users/login | Login user | No | ```json { "username": "string", "password": "string" }``` | ```json { "message": "Login successful", "user": { "UserID": "number", "FullName": "string", "Username": "string" }}``` |
+
+
+Session Management
+| Method | Endpoint | Description | Auth Required | Response |
+|--------|----------|-------------|---------------|-----------|
+| GET | /sessions/info | Get current session info | Yes | json{ "message": "Session found", "session": { "SessionID": "string", "UserID": "number", "CreatedAt": "date" }} |
+| DELETE | /sessions/logout | Logout (invalidate session) | Yes | json{ "message": "Logout successful"} |
+
 
 ## Technologies Used
 - Node.js

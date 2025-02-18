@@ -9,7 +9,7 @@ const userService = {
       return null; // User not found
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.MatKhau);
+    const passwordMatch = await bcrypt.compare(password, user.Password);
     if (passwordMatch) {
       return user; // Successful
     } else {
@@ -18,12 +18,12 @@ const userService = {
   },
 
   createUser: async (userData) => {
-    const hashedPassword = await bcrypt.hash(userData.MatKhau, saltRounds);
-    const userWithHashedPassword = {
-      ...userData,
-      MatKhau: hashedPassword,
-    };
-    return await userModel.createUser(userWithHashedPassword);
+      const hashedPassword = await bcrypt.hash(userData.Password, saltRounds);
+      const userWithHashedPassword = {
+          ...userData,
+          Password: hashedPassword,
+      };
+      return await userModel.createUser(userWithHashedPassword);
   },
 };
 
