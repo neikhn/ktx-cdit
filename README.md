@@ -2,13 +2,19 @@
 ```
 /my-app
 ├── controllers
+│   ├── userController.js
 │   ├── sessionController.js
-├── models
+├── models  
+│   ├── userModel.js
 │   ├── sessionModel.js
 ├── services
+│   ├── userService.js
 │   ├── sessionService.js
 ├── routes
+│   ├── userRoutes.js
 │   ├── sessionRoutes.js
+├── middleware
+│   ├── authMiddleware.js
 ├── server.js
 ├── .env
 ├── dbConfig.js
@@ -45,9 +51,10 @@ This project is a Node.js application that follows the MVC (Model-View-Controlle
 2. The server will be running on `http://localhost:3000`.
 
 ## Folder Structure
-- **controllers/**: Contains controllers that handle requests and responses.
 - **models/**: Defines the data structure and interacts with the database.
 - **services/**: Implements business logic for handling operations.
+- **middleware/**: Contains middleware functions for authentication and authorization.
+- **controllers/**: Contains controllers that handle requests and responses.
 - **routes/**: Defines API endpoints and maps them to controllers.
 - **server.js**: The main entry point for the application.
 
