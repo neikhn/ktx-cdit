@@ -1,45 +1,39 @@
 const sessionService = require("../services/sessionService");
 
 const sessionController = {
-  login: async (req, res) => {
+  // login: async (req, res) => {
+  //   try {
+  //     const userId = req.user.UserID;
+  //     const sessionId = await sessionService.create(userId);
+
+  //     res.cookie("sessionId", sessionId, {
+  //       httpOnly: true,
+  //       secure: process.env.NODE_ENV === "production",
+  //       sameSite: "strict"
+  //     });
+
+  //     res.status(200).json({
+  //       message: "Session created successfully"
+  //     });
+  //   } catch (error) {
+  //     console.error("Error creating session:", error);
+  //     res.status(500).json({
+  //       message: "Failed to create session",
+  //       error: error.message
+  //     });
+  //   }
+  // },
+  getInfo: async (req, res) => {
     try {
-      const userId = req.user.MaNguoiDung;
-
-      if (!userId) {
-        return res
-          .status(400)
-          .json({ message: "User ID not found after authentication." });
-      }
-
-      const sessionId = await sessionService.createSession(userId);
-
-      res.cookie("sessionId", sessionId, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-      });
-      return res
-        .status(200)
-        .json({ message: "Login successful, session created." });
-    } catch (error) {
-      console.error("Error during login/session creation:", error);
-      return res
-        .status(500)
-        .json({ message: "Failed to create session.", error: error.message });
-    }
-  },
-
-  getSessionInfo: async (req, res) => {
-    try {
-      const sessionId = req.cookies.sessionId; 
+      const sessionId = req.cookies.sessionId;
 
       if (!sessionId) {
         return res
           .status(400)
-          .json({ message: "Session ID cookie is missing." }); 
+          .json({ message: "Session ID cookie is missing." });
       }
 
-      const session = await sessionService.getSession(sessionId);
+      const session = await sessionService.get(sessionId);
 
       if (session) {
         return res
@@ -60,35 +54,34 @@ const sessionController = {
   logout: async (req, res) => {
     try {
       const sessionId = req.cookies.sessionId;
+      await sessionService.delete(sessionId);
 
-      if (!sessionId) {
-        return res
-          .status(400)
-          .json({ message: "Session ID cookie not found for logout." });
-      }
-
-      const deleted = await sessionService.deleteSession(sessionId);
-
-      if (deleted) {
-        res.clearCookie("sessionId", {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-        });
-        return res.status(200).json({
-          message: "Logout successful, session deleted and cookie cleared.",
-        });
-      } else {
-        return res.status(404).json({
-          message:
-            "Session not found or could not be deleted (database issue).",
-        });
-      }
+      res.clearCookie("sessionId");
+      res.status(200).json({
+        message: "Logged out successfully",
+      });
     } catch (error) {
-      console.error("Error during logout/session deletion:", error);
-      return res
-        .status(500)
-        .json({ message: "Failed to logout.", error: error.message });
+      console.error("Error during logout:", error);
+      res.status(500).json({
+        message: "Failed to logout",
+        error: error.message,
+      });
+    }
+  },
+
+  check: async (req, res) => {
+    try {
+      // If we get here, the session is valid (checked by authenticateSession middleware)
+      res.status(200).json({
+        message: "Session is valid",
+        session: req.session,
+      });
+    } catch (error) {
+      console.error("Error checking session:", error);
+      res.status(500).json({
+        message: "Failed to check session",
+        error: error.message,
+      });
     }
   },
 };

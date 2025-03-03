@@ -11,7 +11,12 @@ CREATE TABLE Users (
   Email VARCHAR(255) UNIQUE,
   QRCode VARCHAR(255) UNIQUE,
   Password VARCHAR(255) NOT NULL, -- Hashed password
-  UserType INT NOT NULL
+  UserType INT NOT NULL,
+  CONSTRAINT CHK_UserType CHECK (UserType IN (1, 2, 3, 4))
+  -- 1: Administrator
+  -- 2: Manager
+  -- 3: Shift Supervisor
+  -- 4: Student
 );
 
 CREATE TABLE Sessions (

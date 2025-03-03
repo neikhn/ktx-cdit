@@ -1,10 +1,10 @@
-const express = require('express');
-const sessionController = require('../controllers/sessionController');
-const authenticateSession = require('../middleware/authMiddleware');
+const express = require("express");
+const sessionController = require("../controllers/sessionController");
+const { authenticateSession } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.get('/info', authenticateSession, sessionController.getSessionInfo);
-router.delete('/logout', authenticateSession, sessionController.logout);
+router.post("/logout", authenticateSession, sessionController.logout);
+router.get("/check", authenticateSession, sessionController.check);
 
 module.exports = router;

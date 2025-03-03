@@ -2,14 +2,13 @@ const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
 const sessionModel = {
-  createSession: async (userId, sessionId) => {
+  create: async (userId, sessionId) => {
     try {
       let pool = await sql.connect(dbConfig);
       let result = await pool
         .request()
         .input("SessionID", sql.VarChar, sessionId)
-        .input("UserID", sql.Int, userId)
-        .query(`
+        .input("UserID", sql.Int, userId).query(`
           INSERT INTO Sessions (SessionID, UserID)
           VALUES (@SessionID, @UserID)
         `);
@@ -20,13 +19,12 @@ const sessionModel = {
     }
   },
 
-  getSession: async (sessionId) => {
+  get: async (sessionId) => {
     try {
       let pool = await sql.connect(dbConfig);
       let result = await pool
         .request()
-        .input("SessionID", sql.VarChar, sessionId)
-        .query(`
+        .input("SessionID", sql.VarChar, sessionId).query(`
           SELECT *
           FROM Sessions
           WHERE SessionID = @SessionID
@@ -38,13 +36,12 @@ const sessionModel = {
     }
   },
 
-  deleteSession: async (sessionId) => {
+  delete: async (sessionId) => {
     try {
       let pool = await sql.connect(dbConfig);
       let result = await pool
         .request()
-        .input("SessionID", sql.VarChar, sessionId)
-        .query(`
+        .input("SessionID", sql.VarChar, sessionId).query(`
           DELETE FROM Sessions
           WHERE SessionID = @SessionID
         `);
@@ -55,13 +52,12 @@ const sessionModel = {
     }
   },
 
-  deleteExpiredSessions: async (expiryTime) => {
+  deleteExpired: async (expiryTime) => {
     try {
       let pool = await sql.connect(dbConfig);
       let result = await pool
         .request()
-        .input('ExpiryTime', sql.DateTime, expiryTime)
-        .query(`
+        .input("ExpiryTime", sql.DateTime, expiryTime).query(`
           DELETE FROM Sessions
           WHERE CreatedAt < @ExpiryTime
         `);
@@ -70,7 +66,7 @@ const sessionModel = {
       console.error("Error deleting expired sessions:", err);
       throw err;
     }
-  }
+  },
 };
 
 module.exports = sessionModel;
