@@ -3,7 +3,6 @@ const userService = require("../services/userService");
 
 const authorizeRole = (requiredRole) => {
   return (req, res, next) => {
-    // Get user's role from session
     const userRole = req.session?.UserType;
 
     if (!userRole) {
@@ -20,7 +19,6 @@ const authorizeRole = (requiredRole) => {
   };
 };
 
-// if user can modify target user
 const authorizeUserModification = async (req, res, next) => {
   try {
     const currentUserRole = req.session?.UserType;
@@ -33,18 +31,15 @@ const authorizeUserModification = async (req, res, next) => {
         .json({ message: "Unauthorized - No user session found" });
     }
 
-    // Users can modify their own profile
     if (currentUserId === targetUserId) {
       return next();
     }
 
-    // Get target user's role
     const targetUser = await userService.getById(targetUserId);
     if (!targetUser) {
       return res.status(404).json({ message: "Target user not found" });
     }
 
-    // if current user has permission over target user's role
     if (!roleHelper.hasPermissionOver(currentUserRole, targetUser.UserType)) {
       return res.status(403).json({
         message:

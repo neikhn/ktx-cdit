@@ -8,30 +8,37 @@ const validateRole = (roleId) => {
 };
 
 const userService = {
-  authenticate: async (username, password) => {
-    const user = await userModel.getByUsername(username);
+  authenticate: async (email, password) => {
+    const user = await userModel.getByEmail(email);
     if (!user) {
-      return null; // User not found
+      return null; 
     }
 
     const passwordMatch = await bcrypt.compare(password, user.Password);
     if (passwordMatch) {
-      return user; // Successful
+      return user; 
     } else {
-      return null; // Incorrect
+      return null; 
     }
   },
 
-  create: async (userData) => {
-    if (!validateRole(userData.UserType)) {
-      throw new Error("Invalid user role specified");
+  create: async (userData, transaction = null) => {
+    try {
+      if (!validateRole(userData.UserType)) {
+        throw new Error("Invalid user role specified");
+      }
+
+      const hashedPassword = await bcrypt.hash(userData.Password, saltRounds);
+
+      const userDataToCreate = {
+        ...userData,
+        Password: hashedPassword,
+      };
+
+      return await userModel.create(userDataToCreate, transaction);
+    } catch (error) {
+      throw new Error(`Error creating user: ${error.message}`);
     }
-    const hashedPassword = await bcrypt.hash(userData.Password, saltRounds);
-    const userWithHashedPassword = {
-      ...userData,
-      Password: hashedPassword,
-    };
-    return await userModel.create(userWithHashedPassword);
   },
 
   update: async (userId, userData) => {
@@ -57,8 +64,8 @@ const userService = {
     return await userModel.getById(userId);
   },
 
-  getByUsername: async (userName) => {
-    return await userModel.getByUsername(userName);
+  getByEmail: async (email) => {
+    return await userModel.getByEmail(email);
   },
 
   delete: async (userId) => {

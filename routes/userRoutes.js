@@ -10,25 +10,30 @@ const { UserRoles } = require("../helpers/roleHelper");
 const router = express.Router();
 
 router.post("/register", userController.register);
+
 router.post("/login", userController.login);
+
 router.get(
   "/",
   authenticateSession,
   authorizeRole(UserRoles.MANAGER),
   userController.getAll
 );
+
 router.get(
   "/:id",
   authenticateSession,
   authorizeUserModification,
   userController.getById
 );
+
 router.put(
   "/:id",
   authenticateSession,
   authorizeUserModification,
   userController.update
 );
+
 router.delete(
   "/:id",
   authenticateSession,

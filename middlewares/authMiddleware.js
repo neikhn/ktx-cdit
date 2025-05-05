@@ -15,13 +15,11 @@ const authenticateSession = async (req, res, next) => {
       return res.status(401).json({ message: "Invalid or expired session" });
     }
 
-    // Get user data and attach to request
     const user = await userService.getById(session.UserID);
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
 
-    // Attach session and user info to request object
     req.session = {
       SessionID: sessionId,
       UserID: user.UserID,

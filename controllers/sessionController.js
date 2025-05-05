@@ -1,28 +1,7 @@
 const sessionService = require("../services/sessionService");
+const studentModel = require("../models/studentModel");
 
 const sessionController = {
-  // login: async (req, res) => {
-  //   try {
-  //     const userId = req.user.UserID;
-  //     const sessionId = await sessionService.create(userId);
-
-  //     res.cookie("sessionId", sessionId, {
-  //       httpOnly: true,
-  //       secure: process.env.NODE_ENV === "production",
-  //       sameSite: "strict"
-  //     });
-
-  //     res.status(200).json({
-  //       message: "Session created successfully"
-  //     });
-  //   } catch (error) {
-  //     console.error("Error creating session:", error);
-  //     res.status(500).json({
-  //       message: "Failed to create session",
-  //       error: error.message
-  //     });
-  //   }
-  // },
   getInfo: async (req, res) => {
     try {
       const sessionId = req.cookies.sessionId;
@@ -71,10 +50,23 @@ const sessionController = {
 
   check: async (req, res) => {
     try {
-      // If we get here, the session is valid (checked by authenticateSession middleware)
+      const sessionData = { ...req.session };
+
+      // If user is UserType 4, fetch student information
+      if (sessionData.UserType === 4) {
+        try {
+          const student = await studentModel.getByUserId(sessionData.UserID);
+          if (student) {
+            sessionData.StudentID = student.StudentID;
+          }
+        } catch (studentError) {
+          console.error("Error fetching student data:", studentError);
+        }
+      }
+
       res.status(200).json({
         message: "Session is valid",
-        session: req.session,
+        session: sessionData,
       });
     } catch (error) {
       console.error("Error checking session:", error);

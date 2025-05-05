@@ -23,7 +23,6 @@ const roleHelper = {
     return roleHierarchy[userRole] <= roleHierarchy[requiredRole];
   },
 
-  // Get role name from role id
   getRoleName: (roleId) => {
     switch (roleId) {
       case UserRoles.ADMINISTRATOR:

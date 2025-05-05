@@ -17,39 +17,63 @@ const userModel = {
     }
   },
 
-  getByUsername: async (username) => {
+  getByEmail: async (email) => {
     try {
       let pool = await sql.connect(dbConfig);
-      let result = await pool.request().input("Username", sql.VarChar, username)
+      let result = await pool.request().input("Email", sql.VarChar, email)
         .query(`
             SELECT *
             FROM Users
-            WHERE Username = @Username
+            WHERE Email = @Email
         `);
       return result.recordset[0];
     } catch (err) {
-      console.error("Error getting user by username:", err);
+      console.error("Error getting user by email:", err);
       throw err;
     }
   },
 
-  create: async (userData) => {
+  getByPhoneNumber: async (phoneNumber) => {
     try {
-      let pool = await sql.connect(dbConfig);
-      let result = await pool
+      const pool = await sql.connect(dbConfig);
+      const result = await pool
         .request()
+        .input("PhoneNumber", sql.VarChar, phoneNumber).query(`
+          SELECT * FROM Users 
+          WHERE PhoneNumber = @PhoneNumber
+        `);
+      return result.recordset[0];
+    } catch (err) {
+      console.error("Error getting user by phone number:", err);
+      throw err;
+    }
+  },
+
+  create: async (userData, transaction = null) => {
+    try {
+      const request = transaction
+        ? transaction.request()
+        : (await sql.connect(dbConfig)).request();
+
+      let result = await request
         .input("FullName", sql.NVarChar, userData.FullName)
-        .input("Username", sql.VarChar, userData.Username)
         .input("PhoneNumber", sql.VarChar, userData.PhoneNumber)
         .input("Email", sql.VarChar, userData.Email)
-        .input("QRCode", sql.VarChar, userData.QRCode)
-        .input("Password", sql.VarChar, userData.Password) // Hashed password will be passed here from service
-        .input("UserType", sql.Int, userData.UserType).query(`
-            INSERT INTO Users (FullName, Username, PhoneNumber, Email, QRCode, Password, UserType)
-            VALUES (@FullName, @Username, @PhoneNumber, @Email, @QRCode, @Password, @UserType);
-            SELECT * FROM Users WHERE UserID = SCOPE_IDENTITY();
+        .input("Password", sql.VarChar, userData.Password)
+        .input("UserType", sql.Int, userData.UserType)
+        .input(
+          "ProfilePicture",
+          sql.VarChar(sql.MAX),
+          userData.ProfilePicture || null
+        ).query(`
+          INSERT INTO Users (
+            FullName, PhoneNumber, Email, Password, 
+            UserType, ProfilePicture
+          )
+          VALUES (@FullName, @PhoneNumber, @Email, @Password, @UserType, @ProfilePicture);
+          SELECT SCOPE_IDENTITY() as UserID;
         `);
-      return result.recordset[0]; // Return created user object
+      return result.recordset[0].UserID;
     } catch (err) {
       console.error("Error creating user:", err);
       throw err;
@@ -60,19 +84,20 @@ const userModel = {
     try {
       const pool = await sql.connect(dbConfig);
 
-      // Remove password from update if not provided
       const { Password, ...updateFields } = userData;
 
-      // Building SET only for provided fields
       const updates = Object.keys(updateFields)
         .map((key) => `${key} = @${key}`)
         .join(", ");
 
       const request = pool.request().input("UserID", sql.Int, userId);
 
-      // Add parameters for each field being updated
       Object.entries(updateFields).forEach(([key, value]) => {
-        request.input(key, sql.NVarChar, value);
+        if (key === "ProfilePicture") {
+          request.input(key, sql.VarChar(sql.MAX), value);
+        } else {
+          request.input(key, sql.NVarChar, value);
+        }
       });
 
       const query = `
@@ -85,6 +110,7 @@ const userModel = {
       const result = await request.query(query);
       return result.recordset[0];
     } catch (err) {
+      console.log("Error updating user:", err);
       throw err;
     }
   },
