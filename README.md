@@ -83,7 +83,6 @@ This project is a Node.js application that follows the MVC (Model-View-Controlle
 - User registration and authentication
 - Role-based access control
 - Session management
-- QR code integration
 
 ### Student Management
 - Student profile management
@@ -160,13 +159,7 @@ This project is a Node.js application that follows the MVC (Model-View-Controlle
 The project includes test cases documented in (tested with postman):
 - `test_cases.xlsx`
 
-To run tests:
-1. Ensure the server is running
-2. Use the test cases as a reference
-3. Test each endpoint using your preferred API testing tool
-
 ## Database
 - Database schema is defined in `db_template.sql`
 - Database configuration is in `dbConfig.js`
-- Additional SQL scripts are available for specific operations (e.g., `remove_qrcode.sql`)
 
